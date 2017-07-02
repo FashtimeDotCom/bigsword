@@ -5,10 +5,17 @@
         <div class="col-md-3" id="novel-list-col">
             <div class="list-group">
                 {% for novel in novel_list %}
-                <a href="{% url 'novel:novel_list' novel_id=novel.id page=1 %}" class="list-group-item">
-                    <span class="badge">{{ novel.reader_cnt }}</span>
-                    {{ novel.novel_name }}
-                </a>
+                    {% if novel.id == current_novel.id %}
+                        <a href="{% url 'novel:novel_list' novel_id=novel.id page=1 %}" class="list-group-item list-group-item-info">
+                            <span class="badge">{{ novel.reader_cnt }}</span>
+                            {{ novel.novel_name }}
+                        </a>
+                    {% else %}
+                    <a href="{% url 'novel:novel_list' novel_id=novel.id page=1 %}" class="list-group-item">
+                        <span class="badge">{{ novel.reader_cnt }}</span>
+                        {{ novel.novel_name }}
+                    </a>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -16,15 +23,15 @@
             {% if chapter_list %}
                 <h3><a href="#">{{ current_novel.novel_name }}</a></h3>
                 <h5>作者: {{ current_novel.author }}</h5>
-                <ul class="list-group">
+                <div class="list-group">
                 {% for chapter in chapter_list %}
-                    <li class="list-group-item">
-                        <a href="#">{{ chapter.chapter_name }}</a>
+                    <a href="{% url 'novel:chapter_detail' chapter_id=chapter.id %}" class="list-group-item">
+                        {{ chapter.chapter_name }}
                         {{ chapter.created | date:'Y年m月d H:i' }}
                         <span class="badge">{{ chapter.reader_cnt }}</span>
-                    </li>
+                    </a>
                 {% endfor %}
-                </ul>
+                </div>
                 <nav>
                 {% if errmsg == 'OK' %}
                 <ul class="pagination pagination-md">

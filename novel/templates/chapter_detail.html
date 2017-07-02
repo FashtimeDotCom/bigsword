@@ -1,0 +1,7 @@
+{% extends '_base.html' %}
+{% block title %}{{ chapter.chapter_name }}{% endblock %}
+{% block content %}
+    {{ chapter.chapter_name }}
+    {{ chapter.novel.author }}
+    {{ chapter.content }}
+{% endblock %}

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
+from django.shortcuts import render, RequestContext
 from django.views.generic.base import TemplateView
 from django.http import HttpResponse
 from models import Novel,Chapter
@@ -40,6 +40,28 @@ class NovelIndexView(TemplateView):
         return context
 
 
+class ChapterDetailView(TemplateView):
+    template_name = 'chapter_detail.html'
+    def get_context_data(self, **kwargs):
+        context=super(ChapterDetailView, self).get_context_data(**kwargs)
+        chapter=Chapter.objects.get(id=kwargs['chapter_id'])
+        context['chapter']=chapter
+        return context
+
+
+
+
+class SelectItems(TemplateView):
+    def get(self, request, *args, **kwargs):
+        sub=request.GET.get('sub')
+        print sub
+        current_novel_id=request.GET.get('novel_id')
+        print current_novel_id
+        current_novel=Novel.objects.get(id=current_novel_id)
+        chapter_list=Chapter.objects.filter(chapter_name__contains=sub)
+        return render(request,'novel_index.html',{'chapter_list':chapter_list,'current_novel':current_novel,'sub':sub}, context_instance=RequestContext)
+
+"""
 class ChapterListView(TemplateView):
     template_name = 'novel_index.html'
     def get_context_data(self, **kwargs):
@@ -55,3 +77,4 @@ class ChapterListView(TemplateView):
         else:
             context['errmsg']='Failed'
         return context
+"""
