@@ -1,0 +1,57 @@
+{% extends '_base.html' %}
+    {% block title %}novels{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-3" id="novel-list-col">
+            <div class="list-group">
+                {% for novel in novel_list %}
+                <a href="{% url 'novel:novel_list' novel_id=novel.id page=1 %}" class="list-group-item">
+                    <span class="badge">{{ novel.reader_cnt }}</span>
+                    {{ novel.novel_name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-9" id="chapter-list-col">
+            {% if chapter_list %}
+                <h3><a href="#">{{ current_novel.novel_name }}</a></h3>
+                <h5>作者: {{ current_novel.author }}</h5>
+                <ul class="list-group">
+                {% for chapter in chapter_list %}
+                    <li class="list-group-item">
+                        <a href="#">{{ chapter.chapter_name }}</a>
+                        {{ chapter.created | date:'Y年m月d H:i' }}
+                        <span class="badge">{{ chapter.reader_cnt }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+                <nav>
+                {% if errmsg == 'OK' %}
+                <ul class="pagination pagination-md">
+                    <li id="previous">
+                        <a href="{% url 'novel:novel_list' page=page|add:-1 novel_id=current_novel.id %}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                    {% for p in pages %}
+                        {% if page == p %}
+                            <li class="active"><a href="{% url 'novel:novel_list' page=p novel_id=current_novel.id %}">{{ p }}</a></li>
+                        {% else %}
+                            <li><a href="{% url 'novel:novel_list' page=p novel_id=current_novel.id %}">{{ p }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li id="next">
+                        <a href="{% url 'novel:novel_list' page=page|add:1 novel_id=current_novel.id %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                没有文章更新哦
+            {% endif %}
+        </div>
+    </div>
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}

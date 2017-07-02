@@ -1,0 +1,50 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}sword{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+</head>
+<body id="mainBody">
+<nav class="navbar navbar-default navbar-static-top" style="background-color: #BBBBBB">
+    <div class="container">
+          <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+              <a class="navbar-brand" href="#">BigSword//&nbsp;&nbsp;&nbsp; <b>剑客书札</b></a>
+        </div>
+          <div id="navbar" class="navbar-right navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+              <li class="navbar-form">
+                  <div >
+                      <form class="form-inline" action="#" method="get">
+                          <div class="form-group">
+                              <input type="text" class="form-control" name="sub" value="{% if sub %}{{ sub }}{% endif %}" placeholder="标题/内容/作者" />
+                          </div>
+                          <button type="submit" class="btn btn-default">Go</button>
+                      </form>
+                  </div>
+              </li>
+          </ul>
+        </div>
+      </div>
+</nav>
+<div class="container">
+	{% if messages %}
+		{% for message in messages %}
+			<div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	{% endif %}
+	{% block content %}
+	{% endblock content %}
+</div>
+<!--load static js files-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

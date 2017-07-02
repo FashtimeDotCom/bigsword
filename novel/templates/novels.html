@@ -1,0 +1,36 @@
+{% extends '_base.html' %}
+    {% block title %}novels{% endblock %}
+{% block content %}
+    <h2>小说Top10</h2>
+    <div class="row">
+        <div class="col-md-3" id="novel-list-col">
+            <div class="list-group">
+                {% for novel in novel_list %}
+                <a href="{% url 'novel:novel_list' novel_id=novel.id %}" class="list-group-item">
+                    <span class="badge">{{ novel.reader_cnt }}</span>
+                    {{ novel.novel_name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-9" id="chapter-list-col">
+            <h3>最近更新列表</h3>
+            {% if chapter_list %}
+                <h4>{{ current_novel.novel_name }}  作者:{{ current_novel.author }}</h4>
+                <ul class="list-group">
+                {% for chapter in chapter_list %}
+                    <li class="list-group-item">{{ chapter.chapter_name }}
+                    {{ chapter.content }}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                None to display.
+            {% endif %}
+
+        </div>
+    </div>
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}
