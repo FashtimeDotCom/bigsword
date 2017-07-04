@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render, RequestContext
+from django.shortcuts import render
+from django.template import RequestContext
 from django.views.generic.base import TemplateView
 from django.http import HttpResponse
 from models import Novel,Chapter
@@ -49,8 +50,6 @@ class ChapterDetailView(TemplateView):
         return context
 
 
-
-
 class SelectItems(TemplateView):
     def get(self, request, *args, **kwargs):
         sub=request.GET.get('sub')
@@ -59,7 +58,7 @@ class SelectItems(TemplateView):
         print current_novel_id
         current_novel=Novel.objects.get(id=current_novel_id)
         chapter_list=Chapter.objects.filter(chapter_name__contains=sub)
-        return render(request,'novel_index.html',{'chapter_list':chapter_list,'current_novel':current_novel,'sub':sub}, context_instance=RequestContext)
+        return render(request,'novel_index.html',{'chapter_list':chapter_list,'current_novel':current_novel,'sub':sub})
 
 """
 class ChapterListView(TemplateView):

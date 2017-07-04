@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
 </head>
 <body id="mainBody">
-<nav class="navbar navbar-default navbar-static-top" style="background-color: #BBBBBB">
+<nav class="navbar navbar-default navbar-static-top" style="background-color: #b2dfee">
     <div class="container">
           <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -21,25 +21,41 @@
           <div id="navbar" class="navbar-right navbar-collapse collapse">
           <ul class="nav navbar-nav">
               <li class="navbar-form">
-                  <div >
                       <form class="form-inline" action="#" method="get">
                           <div class="form-group">
                               <input type="text" class="form-control" name="sub" value="" placeholder="搜索章节" />
                           </div>
                           <button type="submit" class="btn btn-default">Go</button>
                       </form>
-                  </div>
               </li>
+              {% if user.is_authenticated %}
+              <li>
+                  <a href="#"><b>{{ user.username }}</b></a>
+              </li>
+                  <li>
+                      <a href="{% url 'member:member_logout' %}"><b>注销</b></a>
+                  </li>
+              {% else %}
+              <li>
+                  <a href="{% url 'member:member_login' %}"><b>登录</b></a>
+
+              </li>
+              <li>
+                  <a href="{% url 'member:member_register' %}"><b>注册</b></a>
+              </li>
+              {% endif %}
           </ul>
         </div>
       </div>
 </nav>
 <div class="container">
-	{% if messages %}
-		{% for message in messages %}
-			<div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>{{ message }}</div>
-		{% endfor %}
-	{% endif %}
+    {% autoescape off %}
+    {% if messages %}
+        {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}" {% endif %} style="padding: 10px">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    {% endautoescape %}
 	{% block content %}
 	{% endblock content %}
 </div>

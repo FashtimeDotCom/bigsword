@@ -17,8 +17,10 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls import include
 from novel import urls as novel_urls
+from member import urls as member_urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^novel/', include(novel_urls,namespace='novel')),
+    url(r'^member/', include(member_urls,namespace='member')),
 ]
