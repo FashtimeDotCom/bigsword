@@ -6,4 +6,5 @@ urlpatterns=[
     url(r'^logout/',views.LogoutView.as_view(), name='member_logout'),
     url(r'^logout/(?P<next>register|login)', views.LogoutView.as_view(),name='member_logout'),
     url(r'^register/', views.RegisterView.as_view(), name='member_register'),
+    url(r'^change/', views.ChangePassView.as_view(), name='member_change'),
 ]

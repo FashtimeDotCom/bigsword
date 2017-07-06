@@ -10,6 +10,7 @@ from django.contrib.auth.models import AbstractUser
 class Member(AbstractUser):
     nickname=models.CharField(max_length=12, default=u'whoami', verbose_name='nick name')
     is_author=models.BooleanField(default=False, verbose_name='is author')
+    has_confirm_email = models.BooleanField(default=True, verbose_name='has confirmed email')
 
     class Meta:
         ordering = ['username',]

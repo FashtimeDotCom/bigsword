@@ -3,18 +3,15 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-6">
-            <form class="form-horizontal" action="{% url 'member:member_login' %}" method="post">{% csrf_token %}
-                <div class="form-group">
-                    <div class="form-group">
+        <div class="form-horizontal">
+            <form action="{% url 'member:member_login' %}" method="post">{% csrf_token %}
                         <label>邮箱</label>
                         <p>{{ form.email }}</p>
-                    </div>
-                    <div class="form-group">
                         <label>密码</label>
                         <p>{{ form.password }}</p>
-                    </div>
                     <input type="submit" class="btn btn-default" value="登录" />
-                </div>
+                    <a href="{% url 'member:member_change' %}">忘记密码?</a>
             </form>
+        </div>
         </div>
 {% endblock %}
