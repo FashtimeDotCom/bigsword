@@ -2,9 +2,12 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth import login,logout,authenticate
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
 from django.shortcuts import render,HttpResponseRedirect,reverse
 from django.views.generic import View,TemplateView,FormView
 from utils.message_box import MessageBox
+from utils.rand_char import get_random
 from member.models import Member
 from member.forms import LoginForm,RegisterForm, UserChangePassForm, EmailToChangePassForm, NonUserChangePassForm
 
@@ -111,13 +114,19 @@ class RegisterView(FormView):
 
 class ChangePassView(FormView):
     template_name = 'change_passwd.html'
-    redirect_to = '/novel'
+    redirect_to_login = '/member/login'
+    redirect_to_change = '/member/change'
     messages = MessageBox()
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated():
             form = UserChangePassForm()
             is_user=True
         else:
+            user=Member.objects.filter(username__exact=request.GET.get('user'))
+            if request.GET.has_key('confirm') and request.GET.get('confirm')==user.values('changepass_code')[0]['changepass_code']:
+                self.messages.success(request,u'验证成功，请修改您的密码，确保安全!')
+                print user
+                return render(request,'change_passwd_confirm.html',{'form':NonUserChangePassForm(),'u':user.values('username')[0]['username']})
             form = EmailToChangePassForm()
             is_user=False
         return render(request,self.template_name,{'form':form,'is_user':is_user})
@@ -128,7 +137,7 @@ class ChangePassView(FormView):
             if confirm_password==new_password:
                 user.set_password(new_password)
                 user.save()
-                return (True,u'修改密码成功')
+                return (True,u'修改密码成功,请重新登录')
             else:
                 return (False,u'两次密码输入不一致')
         else:
@@ -146,7 +155,7 @@ class ChangePassView(FormView):
                     check=self.check_password(email,old_password,new_password,confirm_password)
                     if check[0]:
                         self.messages.success(request,check[1])
-                        return HttpResponseRedirect(self.redirect_to)
+                        return HttpResponseRedirect(self.redirect_to_login)
                     else:
                         self.messages.warning(request,check[1])
                         return render(request,self.template_name,{'form':form})
@@ -155,4 +164,44 @@ class ChangePassView(FormView):
             else:
                 self.messages.warning(request,u'表单错误')
                 return render(request,self.template_name,{'form':form})
+        else:
+            if not request.POST.has_key('old_password'):
+                print 'okok'
+                form = NonUserChangePassForm(request.POST)
+                if form.is_valid():
+                    new_password=form.cleaned_data['new_password']
+                    confirm_password=form.cleaned_data['confirm_password']
+                    if new_password==confirm_password:
+                        user=Member.objects.get(username__exact=request.POST.get('u'))
+                        user.set_password(new_password)
+                        user.save()
+                        self.messages.success(request,u'修改密码成功')
+                        return HttpResponseRedirect(self.redirect_to_login)
+                    else:
+                        print 'ok'
+                        self.messages.warning(request,u'修改密码失败，请重新修改或联系管理员')
+                        return HttpResponseRedirect(self.redirect_to_change)
+            form=EmailToChangePassForm(request.POST)
+            if form.is_valid():
+                user=Member.objects.filter(email__exact=request.POST.get('email'))
+                if user.values('changepass_code').exists():
+                    confirm=user.values('changepass_code')[0]['changepass_code']
+                else:
+                    confirm=get_random(16)
+                    user.changepass_code=confirm
+                    user.save()
+                to_email=form.cleaned_data['email']
+                from_email=settings.DEFAULT_FROM_EMAIL
+                subject=u'sword密码重置邮件'
+                user=user.values('username')[0]['username']
+                content=u'您申请了sword账户密码重置<a href="http://localhost:8000/member/change?user=%s&confirm=%s">确认请点击链接</a>' % (user,confirm)
+                msg=EmailMultiAlternatives(subject,content,from_email,(to_email,))
+                msg.content_subtype='html'
+                try:
+                    msg.send()
+                    self.messages.success(request,u'邮件发送成功，请前往确认!')
+                except Exception as e:
+                    print e
+                    self.messages.warning(request,u'传送邮件时发生错误,请联系管理员!')
+                return HttpResponseRedirect(self.redirect_to_login)
 

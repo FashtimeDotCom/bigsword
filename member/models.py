@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from utils.rand_char import get_random
 
 # Create your models here.
 
@@ -11,6 +12,7 @@ class Member(AbstractUser):
     nickname=models.CharField(max_length=12, default=u'whoami', verbose_name='nick name')
     is_author=models.BooleanField(default=False, verbose_name='is author')
     has_confirm_email = models.BooleanField(default=True, verbose_name='has confirmed email')
+    changepass_code=models.CharField(max_length=16,default=get_random(16))
 
     class Meta:
         ordering = ['username',]
