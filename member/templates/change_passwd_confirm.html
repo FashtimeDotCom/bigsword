@@ -2,12 +2,14 @@
 {% block title %}修改密码{% endblock %}
 {% block content %}
     <div class="form-horizontal">
-    <form class="form-horizontal" action="{% url 'member:member_non_user_change_done' u=u %}">{% csrf_token %}
-        <label>新密码</label>
-        {{ form.new_password }}
-        <label>确认密码</label>
-        {{ form.confirm_password }}
-        <input class="btn btn-default" value="确认修改" type="submit" />
+    <form class="form-horizontal" action="{% url 'member:member_non_user_change_done' %}" method="post">{% csrf_token %}
+        <label for="id_email">邮箱</label>
+        <p><input name="email" id="id_email" type="text" value="{{ email }}" /></p>
+        <label for="id_new_password">新密码</label>
+        <p><input name="new_password" id="id_new_password" type="password" /></p>
+        <label for="id_confirm_password">确认密码</label>
+        <p><input name="confirm_password" id="id_confirm_password" type="password" /></p>
+        <input type="submit" class="btn btn-default" />
     </form>
     </div>
 {% endblock %}

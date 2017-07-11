@@ -4,8 +4,8 @@
     <div class="form-horizontal">
         {% if is_user %}
             <form action="{% url 'member:member_user_change' %}" method="post">{% csrf_token %}
-                <label>邮箱</label>
-                <p>{{ form.email }}</p>
+                <label for="id_email">邮箱</label>
+                <p><input name="{{ form.email }}" type="text" value="{{ form }}">{{ form.email }}</p>
                 <label>原密码</label>
                 <p>{{ form.old_password }}</p>
                 <label>新密码</label>
