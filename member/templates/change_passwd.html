@@ -5,14 +5,14 @@
         {% if is_user %}
             <form action="{% url 'member:member_user_change' %}" method="post">{% csrf_token %}
                 <label for="id_email">邮箱</label>
-                <p><input name="{{ form.email }}" type="text" value="{{ form }}">{{ form.email }}</p>
-                <label>原密码</label>
-                <p>{{ form.old_password }}</p>
-                <label>新密码</label>
-                <p>{{ form.new_password }}</p>
-                <label>确认密码</label>
-                <p>{{ form.confirm_password }}</p>
-            <input type="submit" class="btn btn-default" value="修改">
+                <p><input name="email" id="id_email" type="text" value="{{ user.email }}" /></p>
+                <label for="id_old_password">原密码</label>
+                <p><input name="old_password" type="password" id="id_old_password" /></p>
+                <label for="id_new_password">新密码</label>
+                <p><input name="new_password" id="id_new_password" type="password" /></p>
+                <label for="id_confirm_password">确认密码</label>
+                <p><input name="confirm_password" id="id_confirm_password" type="password" /></p>
+                <input type="submit" class="btn btn-default" value="修改">
             </form>
         {% else %}
             <form action="{% url 'member:member_non_user_change' %}" method="post">{% csrf_token %}

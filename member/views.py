@@ -120,7 +120,9 @@ class ChangePassView(FormView):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated():
             form = UserChangePassForm()
+            user = request.user
             is_user=True
+            return render(request,self.template_name,{'form':form,'is_user':is_user,'user':user})
         else:
             user=Member.objects.filter(username__exact=request.GET.get('user'))
             if request.GET.has_key('confirm') and request.GET.get('confirm')==user.values('changepass_code')[0]['changepass_code']:
@@ -132,7 +134,7 @@ class ChangePassView(FormView):
                 })
             form = EmailToChangePassForm()
             is_user=False
-        return render(request,self.template_name,{'form':form,'is_user':is_user})
+            return render(request,self.template_name,{'form':form,'is_user':is_user})
     # check and set password.
     def check_password(self,email,old_password,new_password,confirm_password):
         user=Member.objects.get(email__exact=email)
@@ -205,7 +207,7 @@ class ChangePassView(FormView):
                     msg.content_subtype='html'
                     try:
                         msg.send()
-                        self.messages.success(request,u'邮件发送成功，请前往确认!')
+                        self.messages.success(request,u'邮件发送成功，%s!' % ('<b><a href="https://outlook.live.com/owa/">请前往确认</a></b>'))
                     except Exception as e:
                         self.messages.warning(request,u'传送邮件时发生错误,请联系管理员!')
                     return HttpResponseRedirect(self.redirect_to_login)
