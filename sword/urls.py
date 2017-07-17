@@ -21,6 +21,7 @@ from member import urls as member_urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^', include(novel_urls,namespace='novel')),
     url(r'^novel/', include(novel_urls,namespace='novel')),
     url(r'^member/', include(member_urls,namespace='member')),
 ]

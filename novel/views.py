@@ -20,7 +20,7 @@ class NovelIndexView(TemplateView):
         if kwargs.has_key('novel_id') and kwargs['novel_id']!='' and kwargs['novel_id']!=None:
             # 判断page参数是否存在
             if kwargs.has_key('page') and kwargs['page']!='' and kwargs['page'] != None:
-                paginator = ChapterPaginator(novel_id=kwargs['novel_id'], page_size=4)
+                paginator = ChapterPaginator(novel_id=kwargs['novel_id'], page_size=10)
                 pages = [x for x in range(1, paginator.get_page_cnt() + 1)]
                 end = (pages[-1] if len(pages) > 0 else 0)
                 page = paginator.check_page(page=int(kwargs['page']),end=end)

@@ -8,6 +8,7 @@ from django.shortcuts import render,HttpResponseRedirect,reverse
 from django.views.generic import View,TemplateView,FormView
 from utils.message_box import MessageBox
 from utils.rand_char import get_random
+from utils.token import Token
 from member.models import Member
 from member.forms import LoginForm,RegisterForm, UserChangePassForm, EmailToChangePassForm, NonUserChangePassForm
 
@@ -117,6 +118,7 @@ class ChangePassView(FormView):
     redirect_to_login = '/member/login'
     redirect_to_change = '/member/change'
     messages = MessageBox()
+    token = Token()
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated():
             form = UserChangePassForm()
@@ -124,14 +126,23 @@ class ChangePassView(FormView):
             is_user=True
             return render(request,self.template_name,{'form':form,'is_user':is_user,'user':user})
         else:
-            user=Member.objects.filter(username__exact=request.GET.get('user'))
-            if request.GET.has_key('confirm') and request.GET.get('confirm')==user.values('changepass_code')[0]['changepass_code']:
-                self.messages.success(request,u'验证成功，请尽快修改密码，确保安全!')
-                return render(request,'change_passwd_confirm.html',{
-                    'form':NonUserChangePassForm(),
-                    'u':request.GET.get('user'),
-                    'email':user.values('email')[0]['email']
-                })
+            if request.GET.has_key('confirm') and request.GET.has_key('user'):
+                user = Member.objects.get(username__exact=request.GET.get('user'))
+                try:
+                    confirm=self.token.confirm_token(request.GET.get('confirm'))
+                except:
+                    self.messages.warning(request,u'对不起，验证邮件已过期')
+                    return HttpResponseRedirect(self.redirect_to_change)
+                if confirm == user.changepass_code:
+                    self.messages.success(request,u'验证成功，请尽快修改密码，确保安全!')
+                    changepass_code=get_random(16)
+                    user.changepass_code=changepass_code
+                    user.save()
+                    return render(request,'change_passwd_confirm.html',{
+                        'form':NonUserChangePassForm(),
+                        'u':request.GET.get('user'),
+                        'email':user.email
+                    })
             form = EmailToChangePassForm()
             is_user=False
             return render(request,self.template_name,{'form':form,'is_user':is_user})
@@ -193,11 +204,12 @@ class ChangePassView(FormView):
                 if form.is_valid():
                     user=Member.objects.filter(email__exact=request.POST.get('email'))
                     if user.values('changepass_code').exists():
-                        confirm=user.values('changepass_code')[0]['changepass_code']
+                        changepass_code = user.values('changepass_code')[0]['changepass_code']
                     else:
-                        confirm=get_random(16)
-                        user.changepass_code=confirm
+                        changepass_code=get_random(16)
+                        user.changepass_code=changepass_code
                         user.save()
+                    confirm = self.token.generate_confirmation_token(changepass_code)
                     to_email=form.cleaned_data['email']
                     from_email=settings.DEFAULT_FROM_EMAIL
                     subject=u'sword密码重置邮件'
